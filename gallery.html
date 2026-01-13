@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Positive Pillows | Gallery</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="pp-wrapper">
+    <div class="pp-card">
+      <header class="pp-header">
+        <h1 class="pp-title">Positive Pillows</h1>
+        <nav class="pp-nav">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="aboutme.html">About Me</a>
+          <a href="gallery.html" class="active">Gallery</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="gallery-section page-section">
+          <h2 class="gallery-title">Gallery</h2>
+          <p class="gallery-intro">
+            A peek at some Positive Pillows designs. Use the arrows to browse through previous work.
+          </p>
+
+          <div class="gallery-frame">
+            <div class="gallery-side gallery-side-left">
+              <img id="gallery-image-prev" src="gallery-images/IMG_2349.png" alt="Previous pillow preview" />
+            </div>
+
+            <div class="gallery-main">
+              <img id="gallery-image" src="gallery-images/IMG_2349.png" alt="Current pillow" />
+            </div>
+
+            <div class="gallery-side gallery-side-right">
+              <img id="gallery-image-next" src="gallery-images/IMG_2350.png" alt="Next pillow preview" />
+            </div>
+          </div>
+
+          <div class="gallery-arrows">
+            <button id="gallery-prev" class="gallery-arrow" aria-label="Previous pillow">&larr;</button>
+            <span class="gallery-arrows-label">Use the arrows to see more designs</span>
+            <button id="gallery-next" class="gallery-arrow" aria-label="Next pillow">&rarr;</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
