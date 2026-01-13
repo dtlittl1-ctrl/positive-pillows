@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Positive Pillows | Shop</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+  <div class="pp-wrapper">
+    <div class="pp-card">
+      <header class="pp-header">
+        <h1 class="pp-title">Positive Pillows</h1>
+        <nav class="pp-nav">
+          <a href="index.html">Home</a>
+          <a href="shop.html" class="active">Shop</a>
+          <a href="aboutme.html">About Me</a>
+          <a href="gallery.html">Gallery</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="shop-wizard page-section">
+          <h2 class="shop-title">Create Your Custom Pillow</h2>
+          <p class="shop-intro">
+            Walk through the steps below to choose your pillow type, describe your vision, and pick a size.
+            This doesn't place an order, but it helps you plan exactly what you'd like.
+          </p>
+
+          <div class="wizard-step active" data-step="1">
+            <h3 class="wizard-heading">Step 1: Choose a Type</h3>
+            <p class="wizard-text">
+              What kind of occasion or message is this pillow for?
+            </p>
+            <div class="wizard-options">
+              <button class="wizard-option" data-field="type" data-value="CONGRATS" data-next="2">CONGRATS</button>
+              <button class="wizard-option" data-field="type" data-value="LOVE" data-next="2">LOVE</button>
+              <button class="wizard-option" data-field="type" data-value="THANK YOU" data-next="2">THANK YOU</button>
+            </div>
+          </div>
+
+          <div class="wizard-step" data-step="2">
+            <h3 class="wizard-heading">Step 2: Describe Your Vision</h3>
+            <p class="wizard-text">
+              Use this box to describe the occasion, what you'd like the pillow to say, and any color ideas you have.
+            </p>
+            <textarea
+              id="wizard-notes"
+              rows="5"
+              class="wizard-textarea"
+              placeholder="Example: A CONGRATS pillow for my niece graduating high school. Purple and gold colors with her name and graduation year."
+            ></textarea>
+            <button class="wizard-next" data-next="3">Continue to Size</button>
+          </div>
+
+          <div class="wizard-step" data-step="3">
+            <h3 class="wizard-heading">Step 3: Choose a Size</h3>
+            <p class="wizard-text">
+              Choose from common sizes or select "Custom" if you have something specific in mind.
+            </p>
+            <div class="wizard-options">
+              <button class="wizard-option" data-field="size" data-value="Small (12 × 16)" data-next="4">
+                Small (12 × 16)
+              </button>
+              <button class="wizard-option" data-field="size" data-value="Medium (14 × 14)" data-next="4">
+                Medium (14 × 14)
+              </button>
+              <button class="wizard-option" data-field="size" data-value="Large (18 × 18)" data-next="4">
+                Large (18 × 18)
+              </button>
+              <button class="wizard-option" data-field="size" data-value="Custom Size" data-next="4">
+                Custom Size
+              </button>
+            </div>
+          </div>
+
+          <div class="wizard-step" data-step="4">
+            <h3 class="wizard-heading">Step 4: Enter Your Email</h3>
+            <p class="wizard-text">
+              Please provide your email address so we can get back to you about your custom pillow.
+            </p>
+            <input
+              type="email"
+              id="wizard-email"
+              class="wizard-input"
+              placeholder="your.email@example.com"
+              required
+            />
+            <button class="wizard-next" data-next="5">Continue to Summary</button>
+          </div>
+
+          <div class="wizard-step" data-step="5">
+            <h3 class="wizard-heading">Your Pillow Summary</h3>
+            <p class="wizard-text">
+              Here's a quick summary of your selections. Review and submit your inquiry.
+            </p>
+            <div class="wizard-summary">
+              <p><strong>Type:</strong> <span id="summary-type">—</span></p>
+              <p><strong>Vision / Message:</strong></p>
+              <p id="summary-notes">—</p>
+              <p><strong>Size:</strong> <span id="summary-size">—</span></p>
+              <p><strong>Email:</strong> <span id="summary-email">—</span></p>
+            </div>
+            <button id="submit-order" class="wizard-next">Submit Order Inquiry</button>
+            <p id="status-message" style="margin-top: 15px; font-weight: bold;"></p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // EmailJS Configuration
+    const EMAIL_CONFIG = {
+      publicKey: '9lAls2tNg0tqvAGPA',
+      serviceId: 'service_4zj9jsd',
+      templateId: 'template_91knafx'
+    };
+
+    // Initialize EmailJS
+    emailjs.init(EMAIL_CONFIG.publicKey);
+
+    // Store user selections
+    const selections = {
+      type: '',
+      notes: '',
+      size: '',
+      email: ''
+    };
+
+    // Handle option button clicks (for Type and Size)
+    document.querySelectorAll('.wizard-option').forEach(button => {
+      button.addEventListener('click', function() {
+        const field = this.dataset.field;
+        const value = this.dataset.value;
+        const nextStep = this.dataset.next;
+        
+        // Store the selection
+        selections[field] = value;
+        
+        // Move to next step
+        goToStep(nextStep);
+      });
+    });
+
+    // Handle "Continue" button clicks (for Description and Email)
+    document.querySelectorAll('.wizard-next').forEach(button => {
+      button.addEventListener('click', function() {
+        const currentStep = this.closest('.wizard-step').dataset.step;
+        const nextStep = this.dataset.next;
+        
+        // Save notes from step 2
+        if (currentStep === '2') {
+          selections.notes = document.getElementById('wizard-notes').value;
+        }
+        
+        // Save email from step 4
+        if (currentStep === '4') {
+          const emailInput = document.getElementById('wizard-email');
+          if (emailInput.value && emailInput.validity.valid) {
+            selections.email = emailInput.value;
+          } else {
+            alert('Please enter a valid email address.');
+            return;
+          }
+        }
+        
+        // If going to summary (step 5), populate it
+        if (nextStep === '5') {
+          document.getElementById('summary-type').textContent = selections.type;
+          document.getElementById('summary-notes').textContent = selections.notes || '—';
+          document.getElementById('summary-size').textContent = selections.size;
+          document.getElementById('summary-email').textContent = selections.email;
+        }
+        
+        goToStep(nextStep);
+      });
+    });
+
+    // Handle Submit Order button
+    document.getElementById('submit-order').addEventListener('click', function() {
+      const statusMessage = document.getElementById('status-message');
+      const submitButton = this;
+      
+      // Disable button and show loading message
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending...';
+      statusMessage.textContent = 'Sending your inquiry...';
+      statusMessage.style.color = '#666';
+      
+      // Prepare the email parameters (must match your EmailJS template variables)
+      const templateParams = {
+        type: selections.type,
+        notes: selections.notes,
+        size: selections.size,
+        email: selections.email
+      };
+      
+      // Send the email using EmailJS
+      emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, templateParams)
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+          statusMessage.textContent = '✓ Order inquiry sent successfully! We\'ll get back to you soon.';
+          statusMessage.style.color = '#28a745';
+          submitButton.textContent = 'Sent!';
+        }, function(error) {
+          console.error('FAILED...', error);
+          statusMessage.textContent = '✗ Failed to send. Please try again or email us directly.';
+          statusMessage.style.color = '#dc3545';
+          submitButton.disabled = false;
+          submitButton.textContent = 'Try Again';
+        });
+    });
+
+    // Function to navigate between steps
+    function goToStep(stepNumber) {
+      // Hide all steps
+      document.querySelectorAll('.wizard-step').forEach(step => {
+        step.classList.remove('active');
+      });
+      
+      // Show the target step
+      const targetStep = document.querySelector(`.wizard-step[data-step="${stepNumber}"]`);
+      if (targetStep) {
+        targetStep.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>
